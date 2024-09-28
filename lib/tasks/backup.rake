@@ -6,7 +6,7 @@ require 'tty-prompt'
 require 'tty-spinner'
 require 'pastel'
 
-namespace :postgresql_backup do
+namespace :rails_db_backup do
   desc 'Dumps the database'
   task dump: :environment do
     title = pastel.yellow.bold('POSTGRESQL BACKUP')
@@ -65,7 +65,7 @@ namespace :postgresql_backup do
 
   def configuration
     @configuration ||= begin
-      config = PostgresqlBackup.configuration.dup
+      config = RailsDbBackup.configuration.dup
       config.repository = ENV['BKP_REPOSITORY'] if ENV['BKP_REPOSITORY'].present?
       config.bucket = ENV['BKP_BUCKET'] if ENV['BKP_BUCKET'].present?
       config.region = ENV['BKP_REGION'] if ENV['BKP_REGION'].present?
@@ -75,7 +75,7 @@ namespace :postgresql_backup do
   end
 
   def db
-    @db ||= Tools::Database.new(configuration)
+    @db ||= Tools::Database.new(configuration, ENV["DB"])
   end
 
   def storage

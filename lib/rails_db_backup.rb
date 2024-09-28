@@ -1,6 +1,6 @@
 require_relative 'configuration'
 
-class PostgresqlBackup
+class RailsDbBackup
   require_relative 'railtie' if defined?(Rails)
 
   class << self

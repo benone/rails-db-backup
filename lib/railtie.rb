@@ -1,4 +1,4 @@
-require 'postgresql_backup'
+require 'rails_db_backup'
 require 'rails'
 
 class Railtie < Rails::Railtie

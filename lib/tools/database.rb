@@ -1,108 +1,63 @@
+require_relative 'abstract_adapter'
+require_relative 'postgres_adapter'
+require_relative 'sqlite3_adapter'
 
 module Tools
   class Database
-    def initialize(configuration)
+
+    attr_accessor :adapter
+    attr_reader :configuration
+    attr_accessor :ar_config
+
+    def initialize(configuration, database_name = nil)
+
+      database_name ||= ::ActiveRecord::Base.connection_db_config.name
+      self.ar_config = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env.to_s, name: database_name)
+
+      # debugger
       @configuration = configuration
+
+      @adapter = case ar_config.configuration_hash[:adapter]
+      when 'postgresql'
+        Tools::PostgresAdapter.new(configuration, ar_config)
+      when 'sqlite3'
+        Tools::Sqlite3Adapter.new(configuration, ar_config)
+      else
+        raise "Unsupported adapter: #{configuration.adapter}"
+      end
     end
 
-    # Backup the database and save it on the backup folder set in the
-    # configuration.
-    # If you need to make the command more verbose, pass
-    # `debug: true` in the arguments of the function.
-    #
-    # Return the full path of the backup file created in the disk.
-    def dump(debug: false)
-      hooks.before_dump
-
-      file_path = File.join(backup_folder, "#{file_name}#{file_suffix}.sql")
-
-      cmd = "PGPASSWORD='#{password}' pg_dump -F p -v -O -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' "
-      debug ? system(cmd) : system(cmd, err: File::NULL)
-
-      hooks.after_dump
-
-      file_path
-    end
-
-    # Drop the database and recreate it.
-    #
-    # This is done by invoking two Active Record's rake tasks:
-    #
-    # * rake db:drop
-    # * rake db:create
     def reset
-      system('bundle exec rake db:drop db:create')
+      # debugger
+      system("bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name}")
     end
 
-    # Restore the database from a file in the file system.
-    #
-    # If you need to make the command more verbose, pass
-    # `debug: true` in the arguments of the function.
-    def restore(file_name, debug: false)
-      hooks.before_restore
-
-      file_path = File.join(backup_folder, file_name)
-      output_redirection = debug ? '': ' > /dev/null'
-      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' #{output_redirection}"
-      system(cmd)
-
-      hooks.after_restore
-
-      file_path
+    def dump
+      hooks&.before_dump
+      path = adapter.dump
+      hooks&.after_dump
+      path
     end
 
-    # List all backup files from the local backup folder.
-    #
-    # Return a list of strings containing only the file names.
+    def restore(file_name)
+      hooks&.before_restore
+      path = adapter.restore(file_name)
+      hooks&.after_restore
+      path
+    end
+
     def list_files
-      Dir.glob("#{backup_folder}/*.sql")
+      Dir.glob("#{adapter.backup_folder}/*.sql")
         .reject { |f| File.directory?(f) }
         .map { |f| Pathname.new(f).basename }
     end
 
     private
 
-    attr_reader :configuration
-
-    def host
-      @host ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:host]
-    end
-
-    def port
-      @port ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:port]
-    end
-
-    def database
-      @database ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:database]
-    end
-
-    def user
-      ::ActiveRecord::Base.connection_db_config.configuration_hash[:username]
-    end
-
-    def password
-      @password ||= ::ActiveRecord::Base.connection_db_config.configuration_hash[:password]
-    end
-
-    def file_name
-      @file_name ||= Time.current.strftime('%Y%m%d%H%M%S')
-    end
-
-    def file_suffix
-      return if configuration.file_suffix.empty?
-      @file_suffix ||= "_#{configuration.file_suffix}"
-    end
-
-    def backup_folder
-      @backup_folder ||= begin
-        File.join(Rails.root, configuration.backup_folder).tap do |folder|
-          FileUtils.mkdir_p(folder)
-        end
-      end
-    end
-
     def hooks
       @hooks ||= configuration.hooks
     end
+
   end
+
 end
