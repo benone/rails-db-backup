@@ -29,7 +29,7 @@ module Tools
 
     def reset
       # debugger
-      system("bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name}")
+      system("bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name} RAILS_ENV=#{ENV["RAILS_ENV"]}")
     end
 
     def dump
