@@ -96,9 +96,11 @@ namespace :rails_db_backup do
 
   def configuration_to_text
     [
+      show_config_for('Env', ENV["RAILS_ENV"] || "development"),
       show_config_for('Repository', configuration.repository),
       configuration.s3? ? nil : show_config_for('Folder', configuration.backup_folder),
       show_config_for('File suffix', configuration.file_suffix),
+      configuration.s3? ? show_config_for('Host', configuration.host) : nil,
       configuration.s3? ? show_config_for('Bucket', configuration.bucket) : nil,
       configuration.s3? ? show_config_for('Region', configuration.region) : nil,
       configuration.s3? ? show_config_for('Remote path', configuration.remote_path) : nil

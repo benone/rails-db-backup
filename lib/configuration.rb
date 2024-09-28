@@ -8,7 +8,8 @@ class Configuration
     :file_suffix,
     :region,
     :remote_path,
-    :repository
+    :repository,
+    :host
 
   attr_reader :hooks
 
@@ -20,7 +21,8 @@ class Configuration
     file_suffix: '',
     region: '',
     remote_path: '_backups/database/',
-    repository: 'file system'
+    repository: 'file system',
+    host: 'amazonaws.com'
   )
     @aws_access_key_id = aws_access_key_id
     @aws_secret_access_key = aws_secret_access_key
@@ -30,6 +32,7 @@ class Configuration
     @region = region
     @remote_path = remote_path
     @repository = repository
+    @host = host
   end
 
   def hooks=(hooks)

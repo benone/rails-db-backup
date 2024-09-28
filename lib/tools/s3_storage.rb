@@ -10,6 +10,7 @@ module Tools
       @configuration = configuration
       @s3 = Fog::Storage.new(
         provider: 'AWS',
+        host: configuration.host,
         region: configuration.region,
         aws_access_key_id: configuration.aws_access_key_id,
         aws_secret_access_key: configuration.aws_secret_access_key
@@ -28,9 +29,8 @@ module Tools
     # It will send the Gemfile to S3, inside the `remote_path` set in the
     # configuration. The bucket name and the credentials are also read from
     # the configuration.
-    def upload(file_path, tags = '')
+    def upload(file_path, tags = nil)
       file_name = Pathname.new(file_path).basename
-
       remote_file.create(
         key: File.join(remote_path, file_name),
         body: File.open(file_path),

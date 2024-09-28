@@ -1,11 +1,12 @@
 PATH
   remote: .
   specs:
-    rails-db-backup (0.0.3)
+    rails-db-backup (0.0.5)
       fog-aws (~> 3.13.0)
       pastel (~> 0.8.0)
       tty-prompt (~> 0.23.0)
       tty-spinner (~> 0.9.3)
+      zip (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -74,6 +75,7 @@ GEM
     tty-spinner (0.9.3)
       tty-cursor (~> 0.7)
     wisper (2.0.1)
+    zip (2.0.2)
 
 PLATFORMS
   ruby

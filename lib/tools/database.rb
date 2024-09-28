@@ -1,6 +1,7 @@
 require_relative 'abstract_adapter'
 require_relative 'postgres_adapter'
 require_relative 'sqlite3_adapter'
+require 'zip'
 
 module Tools
   class Database
@@ -33,20 +34,34 @@ module Tools
 
     def dump
       hooks&.before_dump
-      path = adapter.dump
+      file_path = adapter.dump
       hooks&.after_dump
-      path
+
+      compressed_file_path = "#{file_path}.zip"
+      Zip::File.open(compressed_file_path, Zip::File::CREATE) do |zipfile|
+        zipfile.add(File.basename(file_path), file_path)
+      end
+      compressed_file_path
     end
 
     def restore(file_name)
       hooks&.before_restore
-      path = adapter.restore(file_name)
+
+      decompressed_file_name = file_name.sub('.zip', '')
+      zip_file_path = File.join(adapter.backup_folder, file_name)
+      Zip::File.open(zip_file_path) do |zip_file|
+        zip_file.each do |entry|
+          entry.extract(decompressed_file_name) { true }
+        end
+      end
+
+      path = adapter.restore(decompressed_file_name)
       hooks&.after_restore
       path
     end
 
     def list_files
-      Dir.glob("#{adapter.backup_folder}/*.sql")
+      Dir.glob("#{adapter.backup_folder}/*.zip")
         .reject { |f| File.directory?(f) }
         .map { |f| Pathname.new(f).basename }
     end
