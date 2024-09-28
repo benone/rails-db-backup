@@ -28,8 +28,7 @@ module Tools
     end
 
     def reset
-      # debugger
-      system("bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name} RAILS_ENV=#{ENV["RAILS_ENV"]}")
+      system("DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name}")
     end
 
     def dump
