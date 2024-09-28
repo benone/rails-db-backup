@@ -47,7 +47,7 @@ module Tools
       files = remote_directory.files.map { |file| file.key }
 
       # The first item in the array is only the path an can be discarded.
-      files = files.slice(1, files.length - 1) || []
+      # files = files.slice(1, files.length - 1) || []
 
       files
         .map { |file| Pathname.new(file).basename.to_s }

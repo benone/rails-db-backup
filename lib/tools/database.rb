@@ -45,13 +45,14 @@ module Tools
     end
 
     def restore(file_name)
-      hooks&.before_restore
 
+      hooks&.before_restore
       decompressed_file_name = file_name.sub('.zip', '')
       zip_file_path = File.join(adapter.backup_folder, file_name)
+      decompressed_file_path = File.join(adapter.backup_folder, decompressed_file_name)
       Zip::File.open(zip_file_path) do |zip_file|
         zip_file.each do |entry|
-          entry.extract(decompressed_file_name) { true }
+          entry.extract(decompressed_file_path) { true }
         end
       end
 

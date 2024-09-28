@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'rails-db-backup'
-  s.version     = '0.0.5'
+  s.version     = '0.0.6'
   s.summary     = "Automate Rails backup and restore"
   s.description = "This gem automates database backup and restore in your Rails project. It will inject two rake tasks that you can use to manage your data, either by using the local system or AWS S3 storage."
   s.authors     = [""]
