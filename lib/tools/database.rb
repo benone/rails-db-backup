@@ -1,7 +1,6 @@
 require_relative 'abstract_adapter'
 require_relative 'postgres_adapter'
 require_relative 'sqlite3_adapter'
-require 'zip'
 
 module Tools
   class Database
@@ -29,7 +28,10 @@ module Tools
     end
 
     def reset
-      system("DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:drop:#{ar_config.name} db:create:#{ar_config.name}")
+      databases_count = ActiveRecord::Base.configurations.configs_for(env_name: Rails.env.to_s).size
+      suffix = ":#{ar_config.name}" if databases_count > 1
+
+      system("DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:drop#{suffix} db:create#{suffix}")
     end
 
     def dump
@@ -38,9 +40,12 @@ module Tools
       hooks&.after_dump
 
       compressed_file_path = "#{file_path}.zip"
-      Zip::File.open(compressed_file_path, Zip::File::CREATE) do |zipfile|
+      ::Zip::File.open(compressed_file_path, create: true) do |zipfile|
         zipfile.add(File.basename(file_path), file_path)
       end
+
+      File.delete(file_path) # Remove the original file after compressing it
+
       compressed_file_path
     end
 
@@ -50,7 +55,7 @@ module Tools
       decompressed_file_name = file_name.sub('.zip', '')
       zip_file_path = File.join(adapter.backup_folder, file_name)
       decompressed_file_path = File.join(adapter.backup_folder, decompressed_file_name)
-      Zip::File.open(zip_file_path) do |zip_file|
+      ::Zip::File.open(zip_file_path) do |zip_file|
         zip_file.each do |entry|
           entry.extract(decompressed_file_path) { true }
         end

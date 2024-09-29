@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'rails-db-backup'
-  s.version     = '0.0.6'
+  s.version     = '0.0.7'
   s.summary     = "Automate Rails backup and restore"
   s.description = "This gem automates database backup and restore in your Rails project. It will inject two rake tasks that you can use to manage your data, either by using the local system or AWS S3 storage."
   s.authors     = [""]
@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'pastel', '~> 0.8.0'
   s.add_dependency 'tty-prompt', '~> 0.23.0'
   s.add_dependency 'tty-spinner', '~> 0.9.3'
-  s.add_dependency 'zip', "~> 2.0"
+  s.add_dependency 'rubyzip', "~> 2.3"
 end
