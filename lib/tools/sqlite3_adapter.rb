@@ -11,6 +11,9 @@ module Tools
     def restore(file_name, debug: false)
       file_path = File.join(backup_folder, file_name)
       output_redirection = debug ? '': ' > /dev/null'
+
+      File.delete(ar_config.database) if File.exist?(ar_config.database)
+
       cmd = "sqlite3 #{ar_config.database} < #{file_path} #{output_redirection}"
       system(cmd)
 

@@ -11,7 +11,7 @@ module Tools
     def restore(file_name, debug: false)
       file_path = File.join(backup_folder, file_name)
       output_redirection = debug ? '': ' > /dev/null'
-      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' #{output_redirection}"
+      cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' --clean --create #{output_redirection}"
       system(cmd)
       file_path
     end

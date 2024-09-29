@@ -9,7 +9,7 @@ require 'pastel'
 namespace :rails_db_backup do
   desc 'Dumps the database'
   task dump: :environment do
-    title = pastel.yellow.bold('POSTGRESQL BACKUP')
+    title = pastel.yellow.bold('RAILS DATABASE BACKUP')
     text = 'You are about to backup your database. Relax on your seat, this process is usually fast and you don\'t need to do anything except wait for the process to end. Here is the current configuration for this backup:'
     texts = [text, ' ', configuration_to_text].flatten
     disclaimer.show(title: title, texts: texts)
