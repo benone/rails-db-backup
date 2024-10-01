@@ -13,5 +13,11 @@ module Tools
 
       result
     end
+
+    def self.info(text)
+      pastel = Pastel.new
+      puts pastel.blue.bold("\n#{text}")
+    end
+
   end
 end

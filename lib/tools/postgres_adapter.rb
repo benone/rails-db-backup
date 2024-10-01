@@ -13,10 +13,12 @@ module Tools
       output_redirection = debug ? '': ' > /dev/null'
 
       drop_schema_cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -p '#{port}' -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' > /dev/null 2>&1"
+      Tools::Terminal.info(drop_schema_cmd)
       system(drop_schema_cmd) rescue nil
 
       # cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -f '#{file_path}' -p '#{port}' --clean --create #{output_redirection}"
       cmd = "PGPASSWORD='#{password}' psql -U '#{user}' -h '#{host}' -d '#{database}' -p '#{port}' -f #{file_path} #{output_redirection}"
+      Tools::Terminal.info(cmd)
       system(cmd)
 
       file_path

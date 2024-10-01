@@ -43,7 +43,9 @@ module Tools
       # ::Zip::File.open(compressed_file_path, create: true) do |zipfile|
       #   zipfile.add(File.basename(file_path), file_path)
       # end
-      system("zip -j #{compressed_file_path} #{file_path}")
+      command = "zip -j #{compressed_file_path} #{file_path}"
+      Tools::Terminal.info(command)
+      system(command)
       File.delete(file_path) # Remove the original file after compressing it
 
       compressed_file_path
@@ -61,6 +63,8 @@ module Tools
       #     entry.extract(decompressed_file_path) { true }
       #   end
       # end
+      command = "unzip -o #{zip_file_path} -d #{File.dirname(decompressed_file_path)}"
+      Tools::Terminal.info(command)
       system("unzip -o #{zip_file_path} -d #{File.dirname(decompressed_file_path)}")
 
       path = adapter.restore(decompressed_file_name)
