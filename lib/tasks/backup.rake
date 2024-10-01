@@ -27,7 +27,7 @@ namespace :rails_db_backup do
 
   desc 'Restores a database backup into the database'
   task restore: :environment do
-    title = pastel.green('POSTGRESQL DATABASE RESTORE')
+    title = pastel.green('RAILS DATABASE RESTORE')
     text = 'Let\'s get your data back. You will be prompted to choose the file to restore, but that\'s all, you can leave the rest to us. Here is the current configuration for this restore:'
     texts = [text, ' ', configuration_to_text].flatten
     disclaimer.show(title: title, texts: texts)
